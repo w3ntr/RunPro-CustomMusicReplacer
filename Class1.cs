@@ -79,7 +79,6 @@ namespace CustomMusicMod
 
         public override void OnUpdate()
         {
-            // Перехват клавиши при переназначении
             if (isRebinding)
             {
                 foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
@@ -96,13 +95,12 @@ namespace CustomMusicMod
                 return;
             }
 
-            // Обычное открытие / закрытие меню
+
             if (Input.GetKeyDown(configMenuKey.Value))
             {
                 showMenu = !showMenu;
             }
 
-            // Автоматическое управление курсором мыши
             if (showMenu)
             {
                 Cursor.visible = true;
