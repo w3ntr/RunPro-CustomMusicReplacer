@@ -1,5 +1,8 @@
 # Custom Music Replacer for Run Pro
 
+[![Platform](https://img.shields.io/badge/Platform-MelonLoader-00aaff)](https://github.com/LavaGang/MelonLoader)
+[![Version](https://img.shields.io/badge/Version-1.4.0-brightgreen)]()
+
 A Lightweight utility mod for **Run Pro** that enables dynamic background music replacement with custom audio tracks.
 
 ## Overview
