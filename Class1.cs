@@ -1,11 +1,11 @@
-﻿using MelonLoader;
+using MelonLoader;
 using MelonLoader.Utils;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(CustomMusicMod.Main), "Custom Music Replacer", "1.3.0", "w3ntr")]
+[assembly: MelonInfo(typeof(CustomMusicMod.Main), "Custom Music Replacer", "1.4.0", "w3ntr")]
 [assembly: MelonGame(null, null)]
 
 namespace CustomMusicMod
@@ -28,8 +28,11 @@ namespace CustomMusicMod
         private float masterVolume = 1.0f;
         private string lastReplacedTrack = "None";
 
+        // GUI Scroll position
+        private Vector2 scrollPosition = Vector2.zero;
+
         // GUI Window rectangle (X, Y, Width, Height)
-        private Rect windowRect = new Rect(30, 30, 320, 360);
+        private Rect windowRect = new Rect(30, 30, 320, 390);
 
         public override void OnInitializeMelon()
         {
@@ -140,41 +143,46 @@ namespace CustomMusicMod
             }
 
             // 2. Information Header
-            GUI.Label(new Rect(startX, startY + 50, width, 20), $"Loaded WAVs: {customClips.Count}");
-            GUI.Label(new Rect(startX, startY + 70, width, 20), $"Playing: {lastReplacedTrack}");
+            GUI.Label(new Rect(startX, startY + 45, width, 20), $"Loaded WAVs: {customClips.Count}");
+            GUI.Label(new Rect(startX, startY + 65, width, 20), $"Playing: {lastReplacedTrack}");
 
-            // 3. Custom Track List & Force Play
-            GUI.Box(new Rect(startX, startY + 100, width, 160), "Available Custom Songs");
+            // 3. Custom Track List with ScrollView
+            GUI.Box(new Rect(startX, startY + 90, width, 155), "Available Custom Songs");
 
-            float listY = startY + 125;
-            for (int i = 0; i < customClipNames.Count && i < 5; i++)
+            Rect scrollOuterRect = new Rect(startX + 5, startY + 110, width - 10, 128);
+            float contentHeight = Mathf.Max(128, customClipNames.Count * 26);
+            Rect scrollContentRect = new Rect(0, 0, width - 28, contentHeight);
+
+            scrollPosition = GUI.BeginScrollView(scrollOuterRect, scrollPosition, scrollContentRect);
+
+            for (int i = 0; i < customClipNames.Count; i++)
             {
                 string songName = customClipNames[i];
-                string displayName = songName.Length > 20 ? songName.Substring(0, 17) + "..." : songName;
+                string displayName = songName.Length > 18 ? songName.Substring(0, 15) + "..." : songName;
 
-                GUI.Label(new Rect(startX + 10, listY, 170, 20), displayName);
+                float itemY = i * 26;
+                GUI.Label(new Rect(5, itemY + 2, 170, 22), displayName);
 
-                if (GUI.Button(new Rect(startX + 190, listY - 2, 75, 22), "Play"))
+                if (GUI.Button(new Rect(180, itemY, 65, 22), "Play"))
                 {
                     ForcePlaySong(songName);
                 }
-
-                listY += 25;
             }
 
-            // Кнопка бинда
+            GUI.EndScrollView();
+
+            // 4. Menu Key Rebind Button
             string keyBtnText = isRebinding ? "Press any key..." : $"Menu Key: [{configMenuKey.Value}]";
-            if (GUI.Button(new Rect(startX, startY + 225, width, 30), keyBtnText))
+            if (GUI.Button(new Rect(startX, startY + 255, width, 28), keyBtnText))
             {
                 isRebinding = true;
             }
 
-            // 4. Action Buttons
-            if (GUI.Button(new Rect(startX, startY + 270, width, 30), "Rescan Folder"))
+            // 5. Action Buttons
+            if (GUI.Button(new Rect(startX, startY + 290, width, 28), "Rescan Folder"))
             {
                 LoadAllCustomWavs();
             }
-
         }
 
         private void ForcePlaySong(string songName)
